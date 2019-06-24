@@ -186,7 +186,7 @@ def main():
     log_training = open(os.path.join(args.root_log, args.store_name, 'log.csv'), 'w')
     with open(os.path.join(args.root_log, args.store_name, 'args.txt'), 'w') as f:
         f.write(str(args))
-    tf_writer = SummaryWriter(log_dir=os.path.join(args.root_log, args.store_name))
+    tf_writer = SummaryWriter(logdir=os.path.join(args.root_log, args.store_name))
     for epoch in range(args.start_epoch, args.epochs):
         adjust_learning_rate(optimizer, epoch, args.lr_type, args.lr_steps)
 

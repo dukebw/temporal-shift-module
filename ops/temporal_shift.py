@@ -9,7 +9,7 @@ import torch.nn.functional as F
 
 
 class TemporalShift(nn.Module):
-    def __init__(self, net, n_segment=3, n_div=8, inplace=False):
+    def __init__(self, net, n_segment=3, n_div=8, inplace=True):
         super(TemporalShift, self).__init__()
         self.net = net
         self.n_segment = n_segment
@@ -24,7 +24,7 @@ class TemporalShift(nn.Module):
         return self.net(x)
 
     @staticmethod
-    def shift(x, n_segment, fold_div=3, inplace=False):
+    def shift(x, n_segment, fold_div=3, inplace=True):
         nt, c, h, w = x.size()
         n_batch = nt // n_segment
         x = x.view(n_batch, n_segment, c, h, w)

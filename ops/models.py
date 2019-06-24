@@ -98,6 +98,9 @@ class TSN(nn.Module):
         return feature_dim
 
     def _prepare_base_model(self, base_model):
+        """NOTE(brendan): Adds temporal shift and non-local blocks to
+        torchvision model.
+        """
         print('=> base model: {}'.format(base_model))
 
         if 'resnet' in base_model:
