@@ -5,10 +5,13 @@
 
 import torch.utils.data as data
 
-from PIL import Image
+from PIL import Image, ImageFile
 import os
 import numpy as np
 from numpy.random import randint
+
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class VideoRecord(object):

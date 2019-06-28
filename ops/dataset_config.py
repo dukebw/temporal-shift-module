@@ -5,7 +5,7 @@
 
 import os
 
-ROOT_DATASET = '/scratch/ssd/bduke/something-something-v2/'  # '/data/jilin/'
+ROOT_DATASET = '/scratch/ssd/bduke/datasets/'  # '/data/jilin/'
 
 
 def return_ucf101(modality):
@@ -101,10 +101,21 @@ def return_kinetics(modality):
     return filename_categories, filename_imglist_train, filename_imglist_val, root_data, prefix
 
 
+def return_epic_kitchens(modality):
+    filename_categories = 'epic-kitchens/category.txt'
+    assert modality == 'RGB'
+    root_data = f'{ROOT_DATASET}/epic-kitchens/frames'
+    prefix = 'frame_{:010d}.jpg'
+    filename_imglist_train = 'epic-kitchens/train_videofolder.txt'
+    filename_imglist_val = 'epic-kitchens/val_videofolder.txt'
+
+    return filename_categories, filename_imglist_train, filename_imglist_val, root_data, prefix
+
+
 def return_dataset(dataset, modality):
     dict_single = {'jester': return_jester, 'something': return_something, 'somethingv2': return_somethingv2,
                    'ucf101': return_ucf101, 'hmdb51': return_hmdb51,
-                   'kinetics': return_kinetics }
+                   'kinetics': return_kinetics, 'epic_kitchens': return_epic_kitchens}
     if dataset in dict_single:
         file_categories, file_imglist_train, file_imglist_val, root_data, prefix = dict_single[dataset](modality)
     else:

@@ -35,7 +35,8 @@ def gen_label(gulp_dir, interim_dir, out, split_path):
     next_action_class = 0
     rgbviddata = EpicVideoDataset(f'{gulp_dir}/rgb_train', 'verb+noun')
     outputs = {'train': [], 'val': []}
-    for seg in rgbviddata.video_segments:
+    categories = []
+    for i, seg in enumerate(rgbviddata.video_segments):
         parid = seg['participant_id']
         vidid = seg['video_id']
         nar = seg['narration'].replace(' ', '-')
@@ -43,17 +44,25 @@ def gen_label(gulp_dir, interim_dir, out, split_path):
         reldir = f'{parid}/{vidid}/{vidid}_{uid}_{nar}'
         assert os.path.exists(f'{interim_dir}/{reldir}'), f'{interim_dir}/{reldir}'
 
-        action = str(seg['verb_class']) + ',' + str(seg['noun_class'])
+        verb = seg['verb_class']
+        noun = seg['noun_class']
+        action = f'{verb},{noun}'
         if action in action_classes:
             classidx = action_classes[action]
             class_counts[action] += 1
         else:
+            categories.append(f'{seg["verb"]} {seg["noun"]}')
             classidx = next_action_class
             action_classes[action] = classidx
             class_counts[action] = 1
             next_action_class += 1
         nframes = seg['num_frames']
         outputs[idxsplit[i]].append(f'{reldir} {nframes} {classidx}')
+
+    assert len(set(categories)) == len(categories)
+
+    with open(f'{out}/category.txt', 'w') as f:
+        f.write('\n'.join(categories))
 
     with open(f'{out}/train_videofolder.txt', 'w') as f:
         f.write('\n'.join(outputs['train']))
