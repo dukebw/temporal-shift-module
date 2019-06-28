@@ -10,10 +10,10 @@ import os
 import json
 
 
-ROOT = '/scratch/ssd/bduke/something-something-v2'
+ROOT = '/scratch/ssd/bduke/datasets'
 
 if __name__ == '__main__':
-    dataset_name = f'{ROOT}/something-something-v2'  # 'jester-v1'
+    dataset_name = f'{ROOT}/something/v2'  # 'jester-v1'
     with open('%s-labels.json' % dataset_name) as f:
         data = json.load(f)
     categories = []
