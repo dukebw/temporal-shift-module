@@ -46,8 +46,7 @@ def gen_label(gulp_dir, interim_dir, out, split_path):
 
         verb = seg['verb_class']
         noun = seg['noun_class']
-        # action = f'{verb},{noun}'
-        action = verb
+        action = f'{verb},{noun}'
         if action in action_classes:
             classidx = action_classes[action]
             class_counts[action] += 1
