@@ -5,13 +5,24 @@
 
 import torch.utils.data as data
 
-from PIL import Image, ImageFile
+from PIL import Image
 import os
 import numpy as np
 from numpy.random import randint
 
 
-ImageFile.LOAD_TRUNCATED_IMAGES = True
+def _get_filepath(image_tmpl, root_path, record_path):
+    if image_tmpl == 'flow_{}_{:05d}.jpg':
+        file_name = image_tmpl.format('x', 1)
+        full_path = os.path.join(root_path, record_path, file_name)
+    elif image_tmpl == '{:06d}-{}_{:05d}.jpg':
+        file_name = image_tmpl.format(int(record_path), 'x', 1)
+        full_path = os.path.join(root_path, '{:06d}'.format(int(record_path)), file_name)
+    else:
+        file_name = image_tmpl.format(1)
+        full_path = os.path.join(root_path, record_path, file_name)
+
+    return file_name, full_path
 
 
 class VideoRecord(object):
@@ -159,34 +170,23 @@ class TSNDataSet(data.Dataset):
         record = self.video_list[index]
         # check this is a legit video folder
 
-        if self.image_tmpl == 'flow_{}_{:05d}.jpg':
-            file_name = self.image_tmpl.format('x', 1)
-            full_path = os.path.join(self.root_path, record.path, file_name)
-        elif self.image_tmpl == '{:06d}-{}_{:05d}.jpg':
-            file_name = self.image_tmpl.format(int(record.path), 'x', 1)
-            full_path = os.path.join(self.root_path, '{:06d}'.format(int(record.path)), file_name)
-        else:
-            file_name = self.image_tmpl.format(1)
-            full_path = os.path.join(self.root_path, record.path, file_name)
+        file_name, full_path = _get_filepath(self.image_tmpl,
+                                             self.root_path,
+                                             record.path)
 
         while not os.path.exists(full_path):
             print('################## Not Found:', os.path.join(self.root_path, record.path, file_name))
             index = np.random.randint(len(self.video_list))
             record = self.video_list[index]
-            if self.image_tmpl == 'flow_{}_{:05d}.jpg':
-                file_name = self.image_tmpl.format('x', 1)
-                full_path = os.path.join(self.root_path, record.path, file_name)
-            elif self.image_tmpl == '{:06d}-{}_{:05d}.jpg':
-                file_name = self.image_tmpl.format(int(record.path), 'x', 1)
-                full_path = os.path.join(self.root_path, '{:06d}'.format(int(record.path)), file_name)
-            else:
-                file_name = self.image_tmpl.format(1)
-                full_path = os.path.join(self.root_path, record.path, file_name)
+            _, full_path = _get_filepath(self.image_tmpl,
+                                         self.root_path,
+                                         record.path)
 
         if not self.test_mode:
             segment_indices = self._sample_indices(record) if self.random_shift else self._get_val_indices(record)
         else:
             segment_indices = self._get_test_indices(record)
+
         return self.get(record, segment_indices)
 
     def get(self, record, indices):
