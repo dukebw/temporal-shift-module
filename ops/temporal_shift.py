@@ -31,7 +31,10 @@ class TemporalShift(nn.Module):
 
         fold = c // fold_div
         if inplace:
-            out = InplaceShift.apply(x, fold)
+            # Due to some out of order error when performing parallel computing. 
+            # May need to write a CUDA kernel.
+            raise NotImplementedError  
+            # out = InplaceShift.apply(x, fold)
         else:
             out = torch.zeros_like(x)
             out[:, :-1, :fold] = x[:, 1:, :fold]  # shift left
@@ -117,6 +120,7 @@ def make_temporal_shift(net, n_segment, n_div=8, place='blockres', temporal_pool
         elif 'blockres' in place:
             n_round = 1
             if len(list(net.layer3.children())) >= 23:
+                n_round = 2
                 print('=> Using n_round {} to insert temporal shift'.format(n_round))
 
             def make_block_temporal(stage, this_segment):
